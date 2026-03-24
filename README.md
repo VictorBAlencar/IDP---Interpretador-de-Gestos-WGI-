@@ -1,4 +1,4 @@
-# IDP Interpretador de Gestos Web (WGI)
+# IDP - Interpretador de Gestos Web (WGI)
 1.2026 - Trabalho da Disciplina de Oficina em Soluções Web
 
 WGI: Web Gesture Interpreter
