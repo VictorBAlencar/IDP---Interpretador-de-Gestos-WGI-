@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGW - Controle por Gestos</title>
+    <style>
+        body {
+            width: 300px;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d2ff;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .status.active {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid #00d2ff;
+            color: #00d2ff;
+        }
+
+        .status.inactive {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #666;
+            color: #ccc;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            border: 1px solid #666;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .gesture-list {
+            margin-top: 15px;
+        }
+
+        .gesture-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gesture-name {
+            font-weight: bold;
+        }
+
+        .gesture-status {
+            font-size: 12px;
+            color: #00d2ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">IGW</div>
+        <div class="status active" id="extension-status">
+            ✓ Extensão Ativa
+        </div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-test-camera">
+        Testar Câmera
+    </button>
+
+    <button class="btn btn-secondary" id="btn-settings">
+        Configurações
+    </button>
+
+    <div class="gesture-list">
+        <h4>Gestos Disponíveis:</h4>
+        <div class="gesture-item">
+            <span class="gesture-name">Click</span>
+            <span class="gesture-status">✓</span>
+        </div>
+        <div class="gesture-item">
+            <span class="gesture-name">Scroll</span>
+            <span class="gesture-status">✓</span>
+        </div>
+        <div class="gesture-item">
+            <span class="gesture-name">Zoom</span>
+            <span class="gesture-status">✓</span>
+        </div>
+        <div class="gesture-item">
+            <span class="gesture-name">Screenshot</span>
+            <span class="gesture-status">✓</span>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+:root {
+    --neon-blue: #00d2ff;
+    --bg-dark: #141414;
+    --card-bg: #111111;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    padding-top: 96px;
+}
+
+.site-header {
+    background: linear-gradient(135deg, rgba(11, 11, 12, 0.95) 0%, rgba(46, 46, 49, 0.95) 100%);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0, 210, 255, 0.1);
+}
+
+
+.glow-text {
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.5), 0 0 20px rgba(0, 210, 255, 0.2);
+}
+
+.neon-border {
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.neon-border:hover {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.gesture-card {
+    background: #0a0a0a;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    border: 1px solid #1a1a1a;
+    transition: transform 0.3s ease;
+}
+
+.gesture-card:hover {
+    background: #0f0f0f;
+    transform: translateY(-5px);
+}
+
+.gesture-tag {
+    background: rgba(173, 255, 47, 0.1);
+    color: #adff2f;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    border: 1px solid rgba(173, 255, 47, 0.3);
+}
+
+#video-container {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2px solid var(--neon-blue);
+    background: #000;
+}
+
+#webcam {
+    width: 100%;
+    transform: scaleX(-1);
+}
+
+#output {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+#camera-pointer {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 18px rgba(0, 210, 255, 0.55);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.05s ease;
+}
+
+.btn-download {
+    background: linear-gradient(90deg, #00d2ff 0%, #1c2942 100%);
+    transition: transform 0.2s;
+}
+
+.btn-download:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #181717;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-blue);
+}
+
+/* Ícone de mão tecnológica */
+.tech-hand {
+    position: relative;
+    display: inline-block;
+}
+
+.tech-hand::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, var(--neon-blue), transparent, var(--neon-blue));
+    border-radius: 50%;
+    animation: rotate 3s linear infinite;
+    z-index: -1;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+

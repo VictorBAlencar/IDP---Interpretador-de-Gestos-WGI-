@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "IGW - Inovação em Gestos",
+  "version": "1.0.0",
+  "description": "Extensão inovadora que transforma movimentos manuais capturados via webcam em comandos de navegação. Elimina barreiras físicas oferecendo experiência fluida e intuitiva.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon.png",
+      "32": "icons/icon.png",
+      "48": "icons/icon.png",
+      "128": "icons/icon.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["content-script.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
