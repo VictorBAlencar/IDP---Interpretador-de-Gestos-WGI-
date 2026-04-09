@@ -21,9 +21,9 @@ Expansão para Imersão: Serve como uma ponte de baixo custo para experiências 
 
 Desde o controle de câmeras em conferências remotas até a navegação em jogos baseados em web, o potencial do WGI se estende a qualquer aplicação que se beneficie de uma interface espacial. Ele transforma o navegador de uma janela estática em um ambiente responsivo ao movimento humano.
 
------------------
+---
 
-# GUIA DE USO
+# Guia de Instalação e Uso
 
 Para utilizar o Web Gesture Interpreter, é necessário configurar a extensão no navegador e executar o servidor de suporte local para o processamento dos gestos.
 
@@ -35,4 +35,6 @@ Localize a versão mais recente e, na seção Assets, baixe o arquivo comprimido
 
 Extraia o conteúdo do arquivo em uma pasta de sua preferência no computador.
 
------------------
+---
+
+*Este README.md foi realizado com auxílio do Gemini.*
