@@ -98,6 +98,11 @@ function resetWizardUi() {
 
     document.querySelectorAll('.live-feedback[data-target]').forEach(fb => {
         setFeedback(fb, "Ready. Press calibrate, then hold the pose.", null);
+        delete fb.dataset.lockUntil;
+    });
+
+    document.querySelectorAll('.wizard-step').forEach(step => {
+        delete step.dataset.completed;
     });
 
     const nextButtons = document.querySelectorAll('.wizard-step .btn-next');
@@ -160,13 +165,20 @@ document.querySelectorAll('.btn-calibrate-action').forEach(btn => {
     });
 });
 
-function setFeedback(fb, message, state) {
+function setFeedback(fb, message, state, lockMs = 0) {
     fb.classList.remove('success', 'warning', 'error');
     if (state) fb.classList.add(state);
     fb.innerText = message;
+    if (lockMs > 0) {
+        fb.dataset.lockUntil = String(Date.now() + lockMs);
+    } else {
+        delete fb.dataset.lockUntil;
+    }
 }
 
 function setStepComplete(step, gesture) {
+    step.dataset.completed = "true";
+
     const button = step.querySelector('.btn-calibrate-action');
     if (button) {
         button.disabled = true;
@@ -224,7 +236,7 @@ function startCalibrationCapture(gesture, button) {
 
     chrome.runtime.sendMessage({ action: "get_state" }, (state) => {
         if (!state || state.error || !state.is_tracking) {
-            setFeedback(fb, "Start Camera first, then run calibration.", 'error');
+            setFeedback(fb, "Start Camera first, then run calibration.", 'error', 1800);
             return;
         }
 
@@ -278,11 +290,13 @@ function startLiveFeedback() {
             if (calibrationStatus === "failed" && calibrationGesture === activeCalibrationGesture) {
                 if (button) button.disabled = false;
                 activeCalibrationGesture = null;
-                setFeedback(fb, "Calibration rejected. Use the exact pose shown and try again.", 'error');
+                setFeedback(fb, "Calibration rejected. Use the exact pose shown and try again.", 'error', 1800);
                 return;
             }
 
             if (activeCalibrationGesture) return;
+            if (step.dataset.completed === "true") return;
+            if (Number(fb.dataset.lockUntil || 0) > Date.now()) return;
 
             const targetAction = fb.dataset.target;
             if (res.action === targetAction || (targetAction === 'left_click' && res.action === 'left_click_intent')) {
