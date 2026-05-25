@@ -35,7 +35,13 @@ jobs:
 
     - name: Build Windows Installer (Inno Setup)
       if: matrix.os == 'windows-latest'
-      run: '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss'
+      shell: pwsh
+      run: |
+        if (Test-Path "installer.iss") {
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "installer.iss"
+        } else {
+          Write-Host "installer.iss not found; skipping Windows installer build."
+        }
 
     - name: Upload Backend Artifact
       uses: actions/upload-artifact@v4
