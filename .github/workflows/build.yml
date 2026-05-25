@@ -1,4 +1,4 @@
-name: Build WGC Executables
+name: Build WGI Executables
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
     - name: Build Executable
       # --onedir: cria uma pasta (mais rápido que arquivo único). 
       # --collect-data mediapipe: garante que a IA da mão vá junto.
-      run: pyinstaller --noconfirm --onedir --console --collect-data mediapipe wgc.py
+      run: pyinstaller --noconfirm --onedir --console --name wgi --paths back-end --collect-data mediapipe back-end/wgi.py
 
     - name: Build Windows Installer (Inno Setup)
       if: matrix.os == 'windows-latest'
@@ -40,18 +40,18 @@ jobs:
     - name: Upload Backend Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: WGC-Backend-${{ matrix.os }}
+        name: WGI-Backend-${{ matrix.os }}
         path: |
-          Output/WGC_Backend_Installer.exe
-          dist/wgc*
+          Output/WGI_Backend_Installer.exe
+          dist/wgi*
 
     - name: Zip Extension for Chrome Web Store
       if: matrix.os == 'ubuntu-latest'
-      run: cd extensao && zip -r ../WGC_Extension_Store.zip ./* && cd ..
+      run: cd extensao && zip -r ../WGI_Extension_Store.zip ./* && cd ..
 
     - name: Upload Frontend Extension
       if: matrix.os == 'ubuntu-latest' # Faz upload da extensão apenas 1 vez (não precisa repetir nos 3 SOs)
       uses: actions/upload-artifact@v4
       with:
-        name: WGC-Extensao-WebStore
-        path: WGC_Extension_Store.zip
+        name: WGI-Extensao-WebStore
+        path: WGI_Extension_Store.zip

@@ -20,3 +20,13 @@ Interatividade em Mídias Sociais: Permite o consumo de feeds verticais e mídia
 Expansão para Imersão: Serve como uma ponte de baixo custo para experiências de Realidade Aumentada (AR) diretamente no browser, sem a necessidade de hardware caro.
 
 Desde o controle de câmeras em conferências remotas até a navegação em jogos baseados em web, o potencial do WGI se estende a qualquer aplicação que se beneficie de uma interface espacial. Ele transforma o navegador de uma janela estática em um ambiente responsivo ao movimento humano.
+
+## macOS / Apple Silicon
+
+Para compilar e executar o backend em Macs M1/M2/M3:
+
+- Use Python arm64 nativo. Confirme com `python3 -c "import platform; print(platform.machine())"`; o resultado deve ser `arm64`.
+- Use Python 3.10 ou 3.11 para manter compatibilidade com MediaPipe.
+- De permissao de Camera e Accessibility ao Terminal ou ao app compilado em System Settings > Privacy & Security.
+- O backend tenta abrir a webcam com AVFoundation no macOS e volta para o backend padrao do OpenCV se necessario.
+- O arquivo `calibration.json` e salvo ao lado do executavel quando o backend esta compilado.

@@ -2,8 +2,14 @@ import json
 import os
 import copy
 import statistics
+import sys
 
-DB_FILE = "calibration.json"
+def get_runtime_dir():
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(sys.executable)
+    return os.getcwd()
+
+DB_FILE = os.path.join(get_runtime_dir(), "calibration.json")
 
 DEFAULT_CONFIG = {
     "right_click": {
