@@ -31,7 +31,7 @@ jobs:
     - name: Build Executable
       # --onedir: cria uma pasta (mais rápido que arquivo único). 
       # --collect-data mediapipe: garante que a IA da mão vá junto.
-      run: pyinstaller --noconfirm --onedir --console --name wgi --paths back-end --collect-data mediapipe back-end/wgi.py
+      run: pyinstaller --noconfirm --onedir --console --name wgi --icon logo.ico --paths back-end --collect-data mediapipe back-end/wgi.py
 
     - name: Build Windows Installer (Inno Setup)
       if: matrix.os == 'windows-latest'
