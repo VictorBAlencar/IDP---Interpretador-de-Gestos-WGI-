@@ -3,7 +3,7 @@ name: Build WGI Executables
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch: # Permite que você dispare o build manualmente no GitHub
+  workflow_dispatch:
 
 jobs:
   build:
@@ -28,10 +28,49 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
 
-    - name: Build Executable
-      # --onedir: cria uma pasta (mais rápido que arquivo único). 
-      # --collect-data mediapipe: garante que a IA da mão vá junto.
+    - name: Build Windows Executable
+      if: matrix.os == 'windows-latest'
       run: pyinstaller --noconfirm --onedir --console --name wgi --icon logo.ico --paths back-end --collect-data mediapipe back-end/wgi.py
+
+    - name: Build macOS App Bundle
+      if: matrix.os == 'macos-latest'
+      run: |
+        mkdir -p build-icons/wgi.iconset
+        sips -z 16 16 logo.png --out build-icons/wgi.iconset/icon_16x16.png
+        sips -z 32 32 logo.png --out build-icons/wgi.iconset/icon_16x16@2x.png
+        sips -z 32 32 logo.png --out build-icons/wgi.iconset/icon_32x32.png
+        sips -z 64 64 logo.png --out build-icons/wgi.iconset/icon_32x32@2x.png
+        sips -z 128 128 logo.png --out build-icons/wgi.iconset/icon_128x128.png
+        sips -z 256 256 logo.png --out build-icons/wgi.iconset/icon_128x128@2x.png
+        sips -z 256 256 logo.png --out build-icons/wgi.iconset/icon_256x256.png
+        sips -z 512 512 logo.png --out build-icons/wgi.iconset/icon_256x256@2x.png
+        sips -z 512 512 logo.png --out build-icons/wgi.iconset/icon_512x512.png
+        sips -z 1024 1024 logo.png --out build-icons/wgi.iconset/icon_512x512@2x.png
+        iconutil -c icns build-icons/wgi.iconset -o build-icons/wgi.icns
+        pyinstaller --noconfirm --onedir --windowed --name wgi --icon build-icons/wgi.icns --paths back-end --collect-data mediapipe back-end/wgi.py
+
+    - name: Build Linux Executable
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        pyinstaller --noconfirm --onedir --console --name wgi --paths back-end --collect-data mediapipe back-end/wgi.py
+        cp logo.png dist/wgi/wgi-logo.png
+        cat > dist/wgi/run-wgi.sh <<'EOF'
+        #!/usr/bin/env bash
+        cd "$(dirname "$0")"
+        ./wgi
+        EOF
+        chmod +x dist/wgi/run-wgi.sh
+        cat > dist/wgi/wgi-server.desktop <<'EOF'
+        [Desktop Entry]
+        Type=Application
+        Name=WGI Server
+        Comment=Web Gesture Interpreter backend server
+        Exec=./run-wgi.sh
+        Icon=./wgi-logo.png
+        Terminal=true
+        Categories=Utility;Accessibility;
+        EOF
+        chmod +x dist/wgi/wgi-server.desktop
 
     - name: Build Windows Installer (Inno Setup)
       if: matrix.os == 'windows-latest'
@@ -49,14 +88,14 @@ jobs:
         name: WGI-Backend-${{ matrix.os }}
         path: |
           Output/WGI_Backend_Installer.exe
-          dist/wgi*
+          dist/*
 
     - name: Zip Extension for Chrome Web Store
       if: matrix.os == 'ubuntu-latest'
       run: cd extensao && zip -r ../WGI_Extension_Store.zip ./* && cd ..
 
     - name: Upload Frontend Extension
-      if: matrix.os == 'ubuntu-latest' # Faz upload da extensão apenas 1 vez (não precisa repetir nos 3 SOs)
+      if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v4
       with:
         name: WGI-Extensao-WebStore
