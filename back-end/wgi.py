@@ -1,6 +1,9 @@
 import time
 import threading
 import math
+import os
+import shutil
+import subprocess
 import traceback
 import platform
 import pyautogui
@@ -40,6 +43,7 @@ double_click_candidate_frames = 0
 right_click_armed = True
 double_click_armed = True
 mouse_action_error_logged = False
+display_server_warning_logged = False
 
 calibration_gesture = None
 calibration_idx_history = []
@@ -59,6 +63,71 @@ camera_ready_event = threading.Event()
 def should_suppress_mouse_actions():
     return calibration_gesture is not None
 
+def get_linux_display_server():
+    if platform.system() != "Linux":
+        return None
+
+    session_type = os.environ.get("XDG_SESSION_TYPE", "").lower()
+    if session_type in ("x11", "wayland"):
+        return session_type
+    if os.environ.get("WAYLAND_DISPLAY"):
+        return "wayland"
+    if os.environ.get("DISPLAY"):
+        return "x11"
+    return "unknown"
+
+def warn_linux_display_server_once():
+    global display_server_warning_logged
+
+    if platform.system() != "Linux" or display_server_warning_logged:
+        return
+
+    display_server = get_linux_display_server()
+    if display_server == "wayland":
+        print("Aviso: Wayland detectado. A camera pode funcionar, mas o Wayland costuma bloquear controle global do cursor.")
+        print("Para cliques/movimento do WGI, use uma sessao X11/Xorg ou configure uma ferramenta de injecao permitida pelo compositor.")
+    elif display_server == "unknown":
+        print("Aviso: Nenhum DISPLAY/WAYLAND_DISPLAY detectado. O backend pode abrir a camera, mas nao deve controlar o cursor.")
+
+    display_server_warning_logged = True
+
+def run_xdotool(args):
+    xdotool = shutil.which("xdotool")
+    if not xdotool:
+        return False
+
+    try:
+        subprocess.run([xdotool] + args, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return True
+    except (OSError, subprocess.CalledProcessError):
+        return False
+
+def perform_x11_mouse_action(action_name, *args, **kwargs):
+    if platform.system() != "Linux" or get_linux_display_server() != "x11":
+        return False
+
+    if action_name == "moveTo" and len(args) >= 2:
+        return run_xdotool(["mousemove", str(int(args[0])), str(int(args[1]))])
+    if action_name == "click":
+        button_name = kwargs.get("button", "left")
+        button = "3" if button_name == "right" else "1"
+        return run_xdotool(["click", button])
+    if action_name == "doubleClick":
+        return run_xdotool(["click", "--repeat", "2", "--delay", "80", "1"])
+    if action_name == "mouseDown":
+        return run_xdotool(["mousedown", "1"])
+    if action_name == "mouseUp":
+        return run_xdotool(["mouseup", "1"])
+    if action_name == "scroll" and args:
+        scroll_amount = int(args[0])
+        button = "4" if scroll_amount > 0 else "5"
+        repeat = min(abs(scroll_amount), 10)
+        if repeat == 0:
+            return True
+        return run_xdotool(["click", "--repeat", str(repeat), button])
+
+    return False
+
 def perform_mouse_action(action_name, *args, **kwargs):
     global mouse_action_error_logged
 
@@ -66,9 +135,18 @@ def perform_mouse_action(action_name, *args, **kwargs):
         getattr(pyautogui, action_name)(*args, **kwargs)
         return True
     except Exception as exc:
+        if perform_x11_mouse_action(action_name, *args, **kwargs):
+            return True
+
         if not mouse_action_error_logged:
             print(f"Aviso: PyAutoGUI nao conseguiu executar '{action_name}': {exc}")
             print("No macOS, permita Camera e Accessibility para o app/Terminal nas configuracoes de privacidade.")
+            if platform.system() == "Linux":
+                display_server = get_linux_display_server()
+                if display_server == "x11":
+                    print("No Linux X11, instale 'xdotool' para fallback de clique/movimento caso o PyAutoGUI falhe.")
+                elif display_server == "wayland":
+                    print("No Linux Wayland, controle global do cursor geralmente e bloqueado. Use sessao X11/Xorg para suporte completo.")
             mouse_action_error_logged = True
         return False
 
@@ -323,7 +401,7 @@ def _tracking_loop(headless):
                 latest_frame = buffer.tobytes()
 
             if not headless:
-                cv2.imshow('WGI Engine', frame)
+                cv2.imshow('WGI', frame)
                 if cv2.waitKey(1) & 0xFF == ord('q'): break
     finally:
         cap.release()
@@ -393,6 +471,8 @@ class WGIServer(BaseHTTPRequestHandler):
             self.send_response(200); self.send_header('Content-Type', 'application/json'); self.send_header('Access-Control-Allow-Origin', '*'); self.end_headers()
             state_data = current_state.copy()
             state_data["is_tracking"] = is_tracking
+            if platform.system() == "Linux":
+                state_data["display_server"] = get_linux_display_server()
             self.wfile.write(json.dumps(state_data).encode())
             if current_state["action"] not in ["move", "drag", "holding_click"]: current_state["action"] = "move"
         elif self.path == '/config':
@@ -424,6 +504,7 @@ class WGIServer(BaseHTTPRequestHandler):
 def start_tracking(headless):
     global is_tracking
     if not is_tracking:
+        warn_linux_display_server_once()
         cancel_calibration()
         reset_interaction_state()
         camera_ready_event.clear()
