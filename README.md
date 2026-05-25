@@ -20,3 +20,22 @@ Interatividade em Mídias Sociais: Permite o consumo de feeds verticais e mídia
 Expansão para Imersão: Serve como uma ponte de baixo custo para experiências de Realidade Aumentada (AR) diretamente no browser, sem a necessidade de hardware caro.
 
 Desde o controle de câmeras em conferências remotas até a navegação em jogos baseados em web, o potencial do WGI se estende a qualquer aplicação que se beneficie de uma interface espacial. Ele transforma o navegador de uma janela estática em um ambiente responsivo ao movimento humano.
+
+## macOS / Apple Silicon
+
+Para compilar e executar o backend em Macs M1/M2/M3:
+
+- Use Python arm64 nativo. Confirme com `python3 -c "import platform; print(platform.machine())"`; o resultado deve ser `arm64`.
+- Use Python 3.10 ou 3.11 para manter compatibilidade com MediaPipe.
+- De permissao de Camera e Accessibility ao Terminal ou ao app compilado em System Settings > Privacy & Security.
+- O backend tenta abrir a webcam com AVFoundation no macOS e volta para o backend padrao do OpenCV se necessario.
+- O arquivo `calibration.json` e salvo ao lado do executavel quando o backend esta compilado.
+
+## Linux / X11 / Wayland
+
+O backend tenta abrir a webcam no Linux usando V4L2 e volta para o backend padrao do OpenCV se necessario.
+
+- Em sessoes X11/Xorg, o controle do cursor usa PyAutoGUI. Se o PyAutoGUI falhar, o backend tenta usar `xdotool` como fallback para movimento, clique esquerdo, clique direito, clique duplo, drag e scroll.
+- Instale `xdotool` no Linux X11 quando quiser o fallback: `sudo apt install xdotool`.
+- Em Wayland, a camera pode funcionar, mas muitos compositores bloqueiam controle global do cursor por seguranca. Para suporte completo de clique/movimento, use uma sessao X11/Xorg ou configure uma ferramenta de injecao permitida pelo compositor.
+- O endpoint `/state` inclui `display_server` no Linux para ajudar a diagnosticar se a sessao atual e `x11`, `wayland` ou `unknown`.

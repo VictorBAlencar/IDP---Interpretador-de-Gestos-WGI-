@@ -2,3 +2,6 @@ numpy>=1.23.0,<2.0.0
 pyautogui>=0.9.54
 mediapipe==0.10.11
 opencv-python<4.10
+pyobjc-core>=9.0; platform_system == "Darwin"
+pyobjc-framework-Cocoa>=9.0; platform_system == "Darwin"
+pyobjc-framework-Quartz>=9.0; platform_system == "Darwin"
