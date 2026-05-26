@@ -30,7 +30,11 @@ jobs:
 
     - name: Build Windows Executable
       if: matrix.os == 'windows-latest'
-      run: pyinstaller --noconfirm --onedir --console --name wgi --icon logo.ico --paths back-end --collect-data mediapipe back-end/wgi.py
+      shell: pwsh
+      run: |
+        pyinstaller --noconfirm --onedir --console --name wgi --icon logo.ico --paths back-end --collect-data mediapipe back-end/wgi.py
+        Copy-Item -LiteralPath "logo.ico" -Destination "dist/wgi/logo.ico" -Force
+        Copy-Item -LiteralPath "extensao/logo.png" -Destination "dist/wgi/logo.png" -Force
 
     - name: Build macOS App Bundle
       if: matrix.os == 'macos-latest'
@@ -48,6 +52,8 @@ jobs:
         sips -z 1024 1024 extensao/logo.png --out build-icons/wgi.iconset/icon_512x512@2x.png
         iconutil -c icns build-icons/wgi.iconset -o build-icons/wgi.icns
         pyinstaller --noconfirm --onedir --windowed --name wgi --icon build-icons/wgi.icns --paths back-end --collect-data mediapipe back-end/wgi.py
+        cp build-icons/wgi.icns dist/wgi.app/Contents/Resources/wgi.icns
+        cp extensao/logo.png dist/wgi.app/Contents/Resources/logo.png
 
     - name: Build Linux Executable
       if: matrix.os == 'ubuntu-latest'
