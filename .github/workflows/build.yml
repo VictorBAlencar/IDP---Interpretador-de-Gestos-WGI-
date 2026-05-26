@@ -36,16 +36,16 @@ jobs:
       if: matrix.os == 'macos-latest'
       run: |
         mkdir -p build-icons/wgi.iconset
-        sips -z 16 16 logo.png --out build-icons/wgi.iconset/icon_16x16.png
-        sips -z 32 32 logo.png --out build-icons/wgi.iconset/icon_16x16@2x.png
-        sips -z 32 32 logo.png --out build-icons/wgi.iconset/icon_32x32.png
-        sips -z 64 64 logo.png --out build-icons/wgi.iconset/icon_32x32@2x.png
-        sips -z 128 128 logo.png --out build-icons/wgi.iconset/icon_128x128.png
-        sips -z 256 256 logo.png --out build-icons/wgi.iconset/icon_128x128@2x.png
-        sips -z 256 256 logo.png --out build-icons/wgi.iconset/icon_256x256.png
-        sips -z 512 512 logo.png --out build-icons/wgi.iconset/icon_256x256@2x.png
-        sips -z 512 512 logo.png --out build-icons/wgi.iconset/icon_512x512.png
-        sips -z 1024 1024 logo.png --out build-icons/wgi.iconset/icon_512x512@2x.png
+        sips -z 16 16 extensao/logo.png --out build-icons/wgi.iconset/icon_16x16.png
+        sips -z 32 32 extensao/logo.png --out build-icons/wgi.iconset/icon_16x16@2x.png
+        sips -z 32 32 extensao/logo.png --out build-icons/wgi.iconset/icon_32x32.png
+        sips -z 64 64 extensao/logo.png --out build-icons/wgi.iconset/icon_32x32@2x.png
+        sips -z 128 128 extensao/logo.png --out build-icons/wgi.iconset/icon_128x128.png
+        sips -z 256 256 extensao/logo.png --out build-icons/wgi.iconset/icon_128x128@2x.png
+        sips -z 256 256 extensao/logo.png --out build-icons/wgi.iconset/icon_256x256.png
+        sips -z 512 512 extensao/logo.png --out build-icons/wgi.iconset/icon_256x256@2x.png
+        sips -z 512 512 extensao/logo.png --out build-icons/wgi.iconset/icon_512x512.png
+        sips -z 1024 1024 extensao/logo.png --out build-icons/wgi.iconset/icon_512x512@2x.png
         iconutil -c icns build-icons/wgi.iconset -o build-icons/wgi.icns
         pyinstaller --noconfirm --onedir --windowed --name wgi --icon build-icons/wgi.icns --paths back-end --collect-data mediapipe back-end/wgi.py
 
@@ -53,7 +53,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         pyinstaller --noconfirm --onedir --console --name wgi --paths back-end --collect-data mediapipe back-end/wgi.py
-        cp logo.png dist/wgi/wgi-logo.png
+        cp extensao/logo.png dist/wgi/wgi-logo.png
         cat > dist/wgi/run-wgi.sh <<'EOF'
         #!/usr/bin/env bash
         cd "$(dirname "$0")"
